@@ -33,7 +33,9 @@ struct enemy_table
     char sprite;
     char laser;
 };
-struct enemy_table Enemy[14];
+
+
+struct enemy_table Enemy[ME];
 
 
 /* int SizeWorldX(int tier) //Define o Tamanho x da matriz do "tabuleiro"
@@ -148,10 +150,6 @@ int main()
    //MaxY = SizeWorldY(player.dificulty); Dificuldade
 
     SpawnWorld();
-
-    
-       
-
     DisplayWorld();
 
 
