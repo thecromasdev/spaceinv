@@ -2,9 +2,13 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <windows.h>
-
-int MaxX; //Variavel Global para o X do tabuleiro
-int MaxY; //Variavel Global para o X do tabuleiro
+#define WALL 124
+#define WX 10
+#define WY 15
+#define ME 14
+// int MaxX; //Variavel Global para o X do tabuleiro
+//int MaxY; //Variavel Global para o X do tabuleiro
+unsigned int World[WX][WY];
 
 struct player_table
 {
@@ -18,8 +22,9 @@ struct player_table
 
 };
 
-struct enemy
+struct enemy_table
  {
+    int id;
     int posx;
     int posy;
     int attack;
@@ -28,8 +33,10 @@ struct enemy
     char sprite;
     char laser;
 };
+struct enemy_table Enemy[14];
 
-int SizeWorldX(int tier) //Define o Tamanho x da matriz do "tabuleiro"
+
+/* int SizeWorldX(int tier) //Define o Tamanho x da matriz do "tabuleiro"
 {
     int WorldX;
     switch (tier)
@@ -76,7 +83,38 @@ int SizeWorldY(int tier)  //Define o Tamanho y da matriz do "tabuleiro"
 
 return WorldY;
 }
+*/
 
+void SpawnWorld(void)
+{
+int j;
+
+for (j=0;j < WX ; j++)
+{
+    World[j][0]= WALL;
+    World[j][WY] = WALL;
+}
+
+}
+
+
+void DisplayWorld(void)
+{
+    int x;
+    int y;
+
+    for (x=0;x<=WX+1;x++)
+    {
+        for(y=0;y<=WY;y++)
+        {
+            printf("%c",World[x][y]);
+
+        }
+        printf("\n");
+    }
+
+
+}
 
 
 
@@ -93,27 +131,29 @@ int main()
     Sleep (1000);
     system("cls");
     printf ("\n \n                  Bem Vindo %s !       \n \n \n \n", player.name);
-    Sleep (500);  
+    Sleep (500);
     printf ("\n \n O sistema esta sob ataque do virus Sp4c31nv4d3r, precisamos de sua ajuda \n \n \n \n");
-    printf ("Olhando no console voce consegue identificar em que nivel o virus esta. Nos informe em que nivel o virus se encontra \n \n \n ");
+   /* printf ("Olhando no console voce consegue identificar em que nivel o virus esta. Nos informe em que nivel o virus se encontra \n \n \n ");
     printf ("\n 1 - Bypass no Antivirus \n");
     printf ("\n 2 - Computador esta Lento \n");
     printf ("\n 3 - Arquivos Encriptografados \n \n");
     Sleep (1000);
-    scanf ("%d", &player.dificulty);
+    scanf ("%d", &player.dificulty); */
     printf (" \n \n Entendido!! Iremos te deixar frente a frente com o virus. Ao seu sinal, liberaremos o console e tudo estara em suas maos");
     printf(" \n \n  Boa sorte...");
-    Sleep (1000); 
+    Sleep (1000);
+    system("cls");
 
-    MaxX = SizeWorldX(player.dificulty);
-    MaxY = SizeWorldY(player.dificulty);
+    //MaxX = SizeWorldX(player.dificulty); Dificuldade
+   //MaxY = SizeWorldY(player.dificulty); Dificuldade
 
-    printf("%d x %d", MaxX,MaxY);
+    SpawnWorld();
 
-    char World [MaxX][MaxY];
+    
+       
 
-    World[0][0]= '|';
-    printf ("%c", World[0][0]);
+    DisplayWorld();
+
 
     return 0;
 }
