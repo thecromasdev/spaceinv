@@ -4,8 +4,9 @@
 #include <windows.h>
 #define WALL 124
 #define WX 10
-#define WY 15
-#define ME 14
+#define WY 16
+#define ENX 2
+#define ENY 4
 // int MaxX; //Variavel Global para o X do tabuleiro
 //int MaxY; //Variavel Global para o X do tabuleiro
 unsigned int World[WX][WY];
@@ -24,7 +25,6 @@ struct player_table
 
 struct enemy_table
  {
-    int id;
     int posx;
     int posy;
     int attack;
@@ -35,7 +35,12 @@ struct enemy_table
 };
 
 
-struct enemy_table Enemy[ME];
+struct enemy_table Enemy[ENX][ENY];
+
+
+void nothing(void)
+{
+
 
 
 /* int SizeWorldX(int tier) //Define o Tamanho x da matriz do "tabuleiro"
@@ -52,17 +57,12 @@ struct enemy_table Enemy[ME];
         case 3 :
             WorldX=30;
             return WorldX;
-
         default :
             WorldX=10;
             return WorldX;
-
-
     }
 return WorldX;
-
 }
-
 int SizeWorldY(int tier)  //Define o Tamanho y da matriz do "tabuleiro"
 {
     int WorldY;
@@ -77,26 +77,26 @@ int SizeWorldY(int tier)  //Define o Tamanho y da matriz do "tabuleiro"
         case 3 :
             WorldY=35;
             return WorldY;
-
         default :
             WorldY=15;
             return WorldY;
     }
-
 return WorldY;
 }
 */
 
-void SpawnWorld(void)
-{
-int j;
-
-for (j=0;j < WX ; j++)
-{
-    World[j][0]= WALL;
-    World[j][WY] = WALL;
 }
 
+void SpawnWorld(void)
+{
+int auxj;
+
+for (auxj=0;auxj < WX ; auxj++)
+{
+    World[auxj][0]= WALL;
+    World[auxj][WY] = WALL;
+}
+ SpawnEnemy();
 }
 
 
@@ -118,6 +118,58 @@ void DisplayWorld(void)
 
 }
 
+void DebugEnemy(void)
+{
+    int xe;
+    int ye;
+
+    for (xe=0;xe<=ENX;xe++)
+    {
+        for(ye=0;ye<=ENY;ye++)
+        {
+            printf("%d,%d \n",Enemy[xe][ye].posx,Enemy[xe][ye].posy);
+
+        }
+        printf("\n");
+    }
+
+
+}
+
+
+void SpawnEnemy(void)
+{
+    int auxe;
+    int auxn;
+    int enemyx =0;
+    int enemyy =0;
+
+    for (auxe=0;auxe<WX;auxe++)
+    {
+        for (auxn=0;auxn<WY;auxn++)
+        {
+
+        if( (auxn>3) && (auxn<14) && (auxe <WX-5) ) // Verifica se esta em espaco para criar inimigos
+        {
+            if ( (enemyx<= ENX) && (enemyy <= ENY) )  // Verifica se nao extrapola matriz inimigos
+            {
+                Enemy[enemyx][enemyy].posx = auxe;
+                Enemy[enemyx][enemyy].posy = auxn;
+                printf("%d,%d \n",Enemy[enemyx][enemyy].posx,Enemy[enemyx][enemyy].posy);
+                enemyy++;
+            }
+
+
+        }
+        auxn++;
+        }
+       auxe++;
+       enemyx++;
+       enemyy=0;
+    }
+
+
+}
 
 
 int main()
@@ -150,8 +202,10 @@ int main()
    //MaxY = SizeWorldY(player.dificulty); Dificuldade
 
     SpawnWorld();
-    DisplayWorld();
+   // DisplayWorld();
+   // DebugEnemy();
 
 
     return 0;
 }
+
