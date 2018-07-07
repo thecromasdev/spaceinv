@@ -118,23 +118,6 @@ void DisplayWorld(void)
 
 }
 
-void DebugEnemy(void)
-{
-    int xe;
-    int ye;
-
-    for (xe=0;xe<=ENX;xe++)
-    {
-        for(ye=0;ye<=ENY;ye++)
-        {
-            printf("%d,%d \n",Enemy[xe][ye].posx,Enemy[xe][ye].posy);
-
-        }
-        printf("\n");
-    }
-
-
-}
 
 
 void SpawnEnemy(void)
@@ -155,7 +138,7 @@ void SpawnEnemy(void)
             {
                 Enemy[enemyx][enemyy].posx = auxe;
                 Enemy[enemyx][enemyy].posy = auxn;
-                //printf("%d,%d \n",Enemy[enemyx][enemyy].posx,Enemy[enemyx][enemyy].posy);
+                printf("%d,%d \n",Enemy[enemyx][enemyy].posx,Enemy[enemyx][enemyy].posy);
                 enemyy++;
             }
 
