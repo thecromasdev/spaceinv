@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <windows.h>
+#include <time.h>
 #define WALL 124
 #define WX 10
 #define WY 16
@@ -11,7 +12,6 @@
 // int MaxX; //Variavel Global para o X do tabuleiro
 
 //int MaxY; //Variavel Global para o X do tabuleiro
-
 unsigned int World[WX][WY];
 int EO[3]; //Variavel de orientação de movimento 0 equivale a esquerda e 1 equivale direita.
 struct player_table
@@ -23,21 +23,34 @@ struct player_table
     char sprite;
     int posx;
     int posy;
+    int alive;
 };
-
 struct enemy_table
  {
     int posx;
     int posy;
-    int attack;
+    int fire;
+    int alive;
     int shield;
     int spritestt;
     char sprite;
     char laser;
 };
+struct laser_table
+{
+    int posx;
+    int posy;
+    int on;
+    int use;
+
+};
+
+
 
 struct enemy_table Enemy[ENX][ENY];
 struct player_table player;
+struct laser_table playerl;
+struct laser_table enemyl;
 
 void nothing(void)
 {
@@ -180,6 +193,8 @@ void SpawnEnemy(void)
                 {
                     Enemy[enemyx][enemyy].posx = auxe;
                     Enemy[enemyx][enemyy].posy = auxn;
+                    Enemy[enemyx][enemyy].alive = 1;
+                    Enemy[enemyx][enemyy].fire = 0;
                     printf("%d,%d \n",Enemy[enemyx][enemyy].posx,Enemy[enemyx][enemyy].posy);
                     enemyy++;
                 }
@@ -192,9 +207,31 @@ void SpawnEnemy(void)
         enemyy=0;
 
     }
+    EnemyArmed();
 
 }
 
+
+void EnemyDeath (int N1,int N2)
+{
+    Enemy[N1][N2].alive=0;
+    if ( (N1==3) || (Enemy[N1][N2].fire==1)&& (N1!=0))
+    {
+        Enemy[N1][N2].fire=0;
+        Enemy[N1-1][N2].fire=1;
+    }
+
+}
+void EnemyArmed (void)
+{
+    int ef2;
+
+        for (ef2=0;ef2<=ENY-1;ef2++)
+        {
+            Enemy[ENX][ef2].fire=1;
+
+        }
+}
 void EnemyMoveG0 (void)
 {
     int eg0=0;
@@ -366,7 +403,6 @@ void EnemyMoveG2 (void)
          }
     }
 }
-
 void EnemyControl (void)
 {
     EnemyMoveG2();
@@ -374,6 +410,141 @@ void EnemyControl (void)
     EnemyMoveG0();
 
 }
+
+
+void PlayerLaserOn (void)
+{
+    if (playerl.on==0)
+    {
+        playerl.on=1;
+        playerl.posx=player.posx-1;
+        playerl.posy=player.posy;
+    }
+
+}
+void PlayerLaserTravel (void)
+{
+    if (playerl.on==1)
+    {
+        printf("Laser andando em %d,%d \n",playerl.posx,playerl.posy);
+        playerl.posx--;
+        PlayerLaserHit();
+        if(playerl.posx==0)
+        {
+            playerl.on=0;
+        }
+    }
+
+}
+void PlayerLaserHit (void)
+{
+    int enmy;
+    int enmx;
+
+    if(playerl.on==1)
+    {
+        for (enmx=0;enmx<=ENX;enmx++)
+        {
+            for (enmy=0;enmy<=ENY-1;enmy++)
+            {
+                if ( (Enemy[enmx][enmy].posy==playerl.posy) && (Enemy[enmx][enmy].posx==playerl.posx) && (Enemy[enmx][enmy].alive==1) )
+                {
+                    EnemyDeath(enmx,enmy);
+                    playerl.on=0;
+                    player.score= player.score+10;
+                    printf ("HIT!");
+
+                }
+
+
+            }
+
+        }
+    }
+
+}
+void PlayerLaser (void)
+{
+    //PlayerLaserOn();
+    //PlayerLaserTravel();
+}
+
+
+//void EnemyLaser (void)
+void EnemyLaserOn(void)
+{
+    int enfx;
+    int enfy;
+    srand(time(NULL));
+
+    if (enemyl.on==0)
+    {
+
+
+        for (enfx=ENX;enfx>=0;enfx--)
+        {
+            enfy= rand() % 5;
+            if ( (Enemy[enfx][enfy].alive==1) &&  (Enemy[enfx][enfy].fire==1) && (enemyl.use==0) )
+                {
+                    enemyl.on=1;
+                    enemyl.use=1;
+                    enemyl.posx=Enemy[enfx][enfy].posx+1;
+                    enemyl.posy=Enemy[enfx][enfy].posy;
+                    printf ("\n Disparo inimigo saindo de %d,%d \n",Enemy[enfx][enfy].posx,Enemy[enfx][enfy].posy);
+                    break;
+                }
+        }
+    }
+}
+void EnemyLaserTravel (void)
+{
+     if (enemyl.on==1)
+    {
+        printf("\n Disparo inimigo se aproximando em %d,%d \n",enemyl.posx,enemyl.posy);
+        enemyl.posx++;
+        EnemyLaserHit();
+
+        if(enemyl.posx==WX)
+        {
+            enemyl.on=0;
+            enemyl.use=0;
+        }
+    }
+
+}
+void EnemyLaserHit (void)
+{
+    if (enemyl.on==1)
+    {
+            if( (enemyl.posx==player.posx) && (enemyl.posy==player.posy) )
+            {
+                enemyl.on=0;
+                enemyl.use=0;
+                player.alive=0;
+            }
+    }
+}
+
+
+void PlayerLives(void)
+{
+        if (player.alive == 0)
+        {
+                GameOver();
+        }
+}
+
+void GameOver(void)
+{
+    system("cls");
+    printf("\n \n \n Você Perdeu!! \n \n \n ");
+    printf("Seu Score foi de %d", player.score);
+    system("pause");
+
+    exit(0);
+
+}
+
 
 void PlayerControl(void)
 {
@@ -395,7 +566,7 @@ void PlayerControl(void)
                 if(player.posy-1!=0)
                 {
                     player.posy--;
-                    printf("Player andou para Esquerda, atual posição %d", player.posy);
+                    printf("\n Player andou para Esquerda, atual posicao %d,%d", player.posx,player.posy);
                 }
             }
        if (KeyPress == 'd')
@@ -403,28 +574,41 @@ void PlayerControl(void)
                 if(player.posy+1!=WY)
                 {
                     player.posy++;
-                    printf("Player andou para Direita, atual posição %d", player.posy);
+                   printf("\n Player andou para Direita, atual posicao %d,%d", player.posx,player.posy);
                 }
             }
         if (KeyPress == 'w')
             {
-                printf("Fire in the Hole");
+                PlayerLaserOn();
+                PlayerLaserTravel();
+
 
             }
-            printf("Rodou");
+
+            if (KeyPress == 'f')
+            {
+                EnemyLaserOn();
+                EnemyLaserTravel();
+                PlayerLives();
+
+
+            }
+            //printf("Rodou");
             Sleep (1000);
     }
 }
 
 int main()
-
 {
+    player.alive=1;
     player.posx=WX;
     player.posy=WY/2;
     EO[0]=0;
     EO[1]=0;
     EO[2]=0;
     EO[3]=0;
+    enemyl.use=0;
+    enemyl.on=0;
 
 
     /* Tela Inicial */
@@ -454,7 +638,7 @@ int main()
 
     SpawnWorld();
     PlayerControl();
-   
+
 
     return 0;
 }
