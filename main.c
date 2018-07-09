@@ -388,6 +388,26 @@ void EnemyMoveG2 (void)
          }
     }
 }
+void EnemyReach (void)
+{
+    int rx;
+    int ry;
+    for (rx=ENX;rx>=0;rx--)
+        {
+            for(ry=0;ry<=ENY-1;ry++)
+            if ( (Enemy[rx][ry].alive==1) &&  (Enemy[rx][ry].posx==WX) )
+                {
+                    player.alive=0;
+                    printf ("\n Droga, o inimigo nos alcancou !!!!");
+                    break;
+                }
+            if(player.alive==0)
+            {
+                break;
+            }
+        }
+}
+
 void EnemyControl (void)
 {
     EnemyMoveG2();
@@ -510,6 +530,7 @@ void EnemyLaserHit (void)
                 enemyl.on=0;
                 enemyl.use=0;
                 player.alive=0;
+                printf ("Maldicao!! Fomos Atingidos!!");
             }
     }
 }
@@ -525,9 +546,10 @@ void PlayerLives(void)
 
 void GameOver(void)
 {
+    system("pause");
     system("cls");
-    printf("\n \n \n Você Perdeu!! \n \n \n ");
-    printf("Seu Score foi de %d", player.score);
+    printf("\n \n \n Voce Perdeu!! \n \n \n ");
+    printf("\n Seu Score foi de %d \n\n", player.score);
     system("pause");
 
     exit(0);
